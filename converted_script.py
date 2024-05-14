@@ -91,11 +91,6 @@ train_dataset = TokenizedDataset(dataset["train"], lang2id)
 val_dataset = TokenizedDataset(dataset["validation"], lang2id)
 
 # %%
-# it = train_loader._get_iterator()
-# batch = next(it)
-# batch
-
-# %%
 def train(imodel, train_dataset, val_dataset, max_epochs):
     loss = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(imodel.parameters(), lr=1e-5)
@@ -147,7 +142,7 @@ def train(imodel, train_dataset, val_dataset, max_epochs):
 # %%
 im = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
 
-score_tracker = train(im, train_loader, val_loader, 20)
+score_tracker = train(im, train_dataset, val_dataset, 20)
 
 # %% [markdown]
 # Inference
