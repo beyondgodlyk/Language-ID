@@ -20,12 +20,6 @@ lang2id = {lang: i for i, lang in enumerate(languages)}
 id2lang = {i: lang for lang, i in lang2id.items()}
 
 # %%
-# smol_dataset = {}
-# smol_dataset["train"] = dataset["train"][:1000]
-
-# smol_dataset["validation"] = dataset["validation"][:100]
-
-# %%
 class IdentificationModel(nn.Module):
     '''
     The main model for Language Identification
@@ -149,9 +143,11 @@ score_tracker = train(im, train_dataset, val_dataset, 20)
 
 # %%
 # Retrieve best model
+print("Loading model.")
 best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
 best_model.load_state_dict(torch.load("best_model.pt"))
 best_model.cuda()
+print("Model loaded successfully.")
 
 # %%
 test_dataset = TokenizedDataset(dataset["test"], lang2id)
@@ -159,10 +155,18 @@ test_dataset = TokenizedDataset(dataset["test"], lang2id)
 correct = 0
 total = test_dataset.__len__()
 
+print("Starting to check accuracy on test set.")
 for i, test_sample in enumerate(test_dataset):
-    tokenized_text, attention_mask, label = collate_fn([test_sample])
-    label.cuda()
-    output = best_model(tokenized_text.cuda(), attention_mask.cuda())
+    tokenized_output = tokenizer(test_sample[0], return_tensors="pt")
+    tokenized_text = tokenized_output["input_ids"]
+    attention_mask = tokenized_output["attention_mask"]
+    label = torch.tensor(test_sample[1], dtype=torch.long)
+
+    tokenized_text = tokenized_text.cuda()
+    attention_mask = attention_mask.cuda()
+    label = label.cuda()
+
+    output = best_model(tokenized_text, attention_mask)
     _, predicted = torch.max(output, 1)
     if predicted == label:
         correct += 1
