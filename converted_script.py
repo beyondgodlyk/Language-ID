@@ -117,7 +117,7 @@ def train(imodel, train_loader, val_loader, max_epochs):
             optimizer.zero_grad()
             loss_train.backward()
             optimizer.step()
-            print(f"Loss for epoch {epoch} is {loss_train.item()}.")
+            # print(f"Loss for epoch {epoch} is {loss_train.item()}.")
 
         print(f"Training done for epoch {epoch}. Now checking performance on validation set.")
         # Check and save performance for validation set
