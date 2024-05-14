@@ -154,7 +154,7 @@ score_tracker = train(im, train_loader, val_loader, 20)
 
 # %%
 # Retrieve best model
-device = torch.device('cpu')
+device = torch.device('gpu')
 best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
 best_model.load_state_dict(torch.load("best_model.pt"))
 
