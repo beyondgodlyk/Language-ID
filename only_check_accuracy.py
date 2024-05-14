@@ -77,9 +77,12 @@ if __name__ == "__main__":
 
     # Retrieve best model
     print("Loading model.")
+    device = torch.device('cpu')
     best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
-    best_model.load_state_dict(torch.load("best_model.pt"))
+    best_model.load_state_dict(torch.load("best_model.pt", map_location=device))
     best_model.cuda()
+    print(best_model.__class__)
+    print(best_model.get_device())
     print("Model loaded successfully.")
     test_dataset = TokenizedDataset(dataset["test"], lang2id)
 
