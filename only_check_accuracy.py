@@ -95,7 +95,7 @@ if __name__ == "__main__":
         attention_mask = tokenized_output["attention_mask"]
         label = torch.tensor(test_sample[1], dtype=torch.long)
 
-        tokenized_text.cuda()
+        tokenized_text = tokenized_text.cuda()
         attention_mask.cuda()
         label.cuda()
         print(tokenized_text.get_device())
