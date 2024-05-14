@@ -120,11 +120,11 @@ def train(imodel, train_dataset, val_dataset, max_epochs):
                 total += labels.size(0)
                 correct += (predicted == labels).sum().item()
             accuracy = correct / total
-            score_tracker.append(accuracy)
             if epoch_for_best_score == -1 or accuracy > max(score_tracker):
                 epoch_for_best_score = epoch
                 torch.save(imodel.state_dict(), "best_model.pt")
                 print(f"Best model saved for epoch {epoch}.")
+            score_tracker.append(accuracy)
             if epoch - epoch_for_best_score > 5:
                 break
         torch.save(imodel.state_dict(), f"model_{epoch}.pt")
