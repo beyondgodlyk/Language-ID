@@ -88,10 +88,7 @@ def collate_fn(batch):
 from torch.utils.data import DataLoader, RandomSampler, SequentialSampler
 
 train_dataset = TokenizedDataset(dataset["train"], lang2id)
-train_loader = DataLoader(train_dataset, batch_size = 32, sampler = RandomSampler(train_dataset), collate_fn=collate_fn)
-
 val_dataset = TokenizedDataset(dataset["validation"], lang2id)
-val_loader = DataLoader(val_dataset, batch_size=32, sampler = SequentialSampler(val_dataset), collate_fn = collate_fn)
 
 # %%
 # it = train_loader._get_iterator()
@@ -99,7 +96,7 @@ val_loader = DataLoader(val_dataset, batch_size=32, sampler = SequentialSampler(
 # batch
 
 # %%
-def train(imodel, train_loader, val_loader, max_epochs):
+def train(imodel, train_dataset, val_dataset, max_epochs):
     loss = nn.CrossEntropyLoss()
     optimizer = torch.optim.Adam(imodel.parameters(), lr=1e-5)
 
@@ -109,7 +106,8 @@ def train(imodel, train_loader, val_loader, max_epochs):
     epoch_for_best_score = -1
     for epoch in range(max_epochs):
         imodel.train()
-
+        train_loader = DataLoader(train_dataset, batch_size = 32, sampler = RandomSampler(train_dataset), collate_fn=collate_fn)
+        
         for batch in train_loader:
             tokenized_texts, attention_masks, labels = [x.cuda() for x in batch]
             output = imodel(tokenized_texts, attention_masks)
@@ -121,6 +119,7 @@ def train(imodel, train_loader, val_loader, max_epochs):
 
         print(f"Training done for epoch {epoch}. Now checking performance on validation set.")
         # Check and save performance for validation set
+        val_loader = DataLoader(val_dataset, batch_size=32, sampler = SequentialSampler(val_dataset), collate_fn = collate_fn)
         imodel.eval()
         with torch.no_grad():
             correct = 0
@@ -136,6 +135,7 @@ def train(imodel, train_loader, val_loader, max_epochs):
             if epoch_for_best_score == -1 or accuracy > max(score_tracker):
                 epoch_for_best_score = epoch
                 torch.save(imodel.state_dict(), "best_model.pt")
+                print(f"Best model saved for epoch {epoch}.")
             if epoch - epoch_for_best_score > 5:
                 break
         torch.save(imodel.state_dict(), f"model_{epoch}.pt")
@@ -178,7 +178,7 @@ print(f"Accuracy on test set is {correct/total}.")
 # %%
 # Input a sentence
 inputs = tokenizer("What's happening", return_tensors="pt")
-outputs = best_model(inputs["input_ids"], inputs["attention_mask"])
+outputs = best_model(inputs["input_ids"].cuda(), inputs["attention_mask"].cuda())
 print(id2lang[torch.argmax(outputs).item()])
 
 
