@@ -81,7 +81,7 @@ if __name__ == "__main__":
     best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
 
     best_model.load_state_dict(torch.load("best_model.pt", map_location=device))
-    # best_model.cuda()
+    best_model.cuda()
 
     print("Model loaded successfully.")
     test_dataset = TokenizedDataset(dataset["test"], lang2id)
@@ -103,7 +103,7 @@ if __name__ == "__main__":
         _, predicted = torch.max(output, 1)
         if predicted == label:
             correct += 1
-        if i % 100 == 0:
+        if i % 10 == 0:
             print(f"{i} samples done with accuracy {correct/(i+1)}.")
         # print(f"Predicted: {id2lang[predicted.item()]}, Actual: {id2lang[label.item()]}")
     print(f"Accuracy on test set is {correct/total}.")
