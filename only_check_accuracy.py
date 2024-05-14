@@ -87,9 +87,11 @@ if __name__ == "__main__":
     total = test_dataset.__len__()
     print("Starting to check accuracy on test set.")
     for i, test_sample in enumerate(test_dataset):
-        tokenized_text, attention_mask = tokenizer(test_sample[0], return_tensors="pt")
+        tokenized_output = tokenizer(test_sample[0], return_tensors="pt")
+        tokenized_text = tokenized_output["input_ids"]
+        attention_mask = tokenized_output["attention_mask"]
         label = torch.tensor(test_sample[1], dtype=torch.long)
-        
+
         tokenized_text.cuda()
         attention_mask.cuda()
         label.cuda()
