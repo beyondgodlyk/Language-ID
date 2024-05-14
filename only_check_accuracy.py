@@ -95,6 +95,9 @@ if __name__ == "__main__":
         tokenized_text.cuda()
         attention_mask.cuda()
         label.cuda()
+        print(best_model.get_device())
+        print(tokenized_text.get_device())
+        print(attention_mask.get_device())
         output = best_model(tokenized_text, attention_mask)
         _, predicted = torch.max(output, 1)
         if predicted == label:
