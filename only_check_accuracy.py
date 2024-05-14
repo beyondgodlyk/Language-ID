@@ -77,10 +77,9 @@ if __name__ == "__main__":
 
     # Retrieve best model
     print("Loading model.")
-    device = torch.device('cpu')
+    device = torch.device('cuda')
     best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
-    print(best_model.get_device())
-    
+
     best_model.load_state_dict(torch.load("best_model.pt", map_location=device))
     best_model.cuda()
     print(best_model.__class__)
