@@ -149,9 +149,9 @@ score_tracker = train(im, train_dataset, val_dataset, 20)
 
 # %%
 # Retrieve best model
-device = torch.device('cuda')
 best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
 best_model.load_state_dict(torch.load("best_model.pt"))
+best_model.cuda()
 
 # %%
 test_dataset = TokenizedDataset(dataset["test"], lang2id)
@@ -161,6 +161,7 @@ total = test_dataset.__len__()
 
 for i, test_sample in enumerate(test_dataset):
     tokenized_text, attention_mask, label = collate_fn([test_sample])
+    label.cuda()
     output = best_model(tokenized_text.cuda(), attention_mask.cuda())
     _, predicted = torch.max(output, 1)
     if predicted == label:
