@@ -166,7 +166,7 @@ total = test_dataset.__len__()
 
 for i, test_sample in enumerate(test_dataset):
     tokenized_text, attention_mask, label = collate_fn([test_sample])
-    output = best_model(tokenized_text, attention_mask)
+    output = best_model(tokenized_text.cuda(), attention_mask.cuda())
     _, predicted = torch.max(output, 1)
     if predicted == label:
         correct += 1
