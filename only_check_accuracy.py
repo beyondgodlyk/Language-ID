@@ -81,8 +81,8 @@ if __name__ == "__main__":
     best_model = IdentificationModel(model, languages, use_mean_pooling=True, use_max_pooling=True)
 
     best_model.load_state_dict(torch.load("best_model.pt", map_location=device))
-    best_model.cuda()
-    print(next(model.parameters()).is_cuda)
+    # best_model.cuda()
+
     print("Model loaded successfully.")
     test_dataset = TokenizedDataset(dataset["test"], lang2id)
 
@@ -98,8 +98,7 @@ if __name__ == "__main__":
         tokenized_text = tokenized_text.cuda()
         attention_mask = attention_mask.cuda()
         label = label.cuda()
-        print(tokenized_text.get_device())
-        print(attention_mask.get_device())
+
         output = best_model(tokenized_text, attention_mask)
         _, predicted = torch.max(output, 1)
         if predicted == label:
